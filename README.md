@@ -6,7 +6,7 @@
 ```
 Usage of crun:
            crun <regexp>
-        or crun \d{3}
-        or crun [0-9a-z]{2}
-        or crun "(root|admin)" [0-9]{1}
+        or crun "\d{3}"
+        or crun "[0-9a-z]{2}"
+        or crun "(root|admin) [0-9]{1}"
 ```
