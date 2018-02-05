@@ -3,7 +3,7 @@ package crun
 import (
 	"regexp/syntax"
 
-	"github.com/wzshiming/ffmt"
+	"gopkg.in/ffmt.v1"
 )
 
 const MoreTimes = 18
