@@ -22,7 +22,7 @@ crun "\d{1,6}"
 # Violence aesthetics
 crun "(root|admin):[0-9]{4,5}"
 
-# Note: If the amount is too big super card
+# Note: If the number is too large, super slow
 ```
 
 ### Download & Install
