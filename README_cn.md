@@ -29,3 +29,9 @@ crun "(root|admin):[0-9]{4,5}"
 ``` bash
 go get -u -v github.com/wzshiming/crun/cmd/crun
 ```
+
+## MIT许可证
+
+版权所有©2017-2018 wzshiming <[https://github.com/wzshiming](https://github.com/wzshiming)>。
+
+MIT是[MIT许可证](https://opensource.org/licenses/MIT)许可的开源软件。
