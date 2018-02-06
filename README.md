@@ -1,4 +1,4 @@
-# Generate all possibilities based on regularity
+# Generate all possibilities based on regexp
 
 * [English](./README.md)
 * [简体中文](./README_cn.md)
