@@ -16,7 +16,7 @@ Options:
 	-e # Execute the generated text
 ```
 
-### Example
+## Example
 
 ``` bash
 # Generates a number of all possible combinations of 1 to 6 digits in length
@@ -28,7 +28,7 @@ crun "(root|admin):[0-9]{4,5}"
 # Note: If the number is too large, super slow
 ```
 
-### Download & Install
+## Download & Install
 ``` bash
 go get -u -v github.com/wzshiming/crun/cmd/crun
 ```

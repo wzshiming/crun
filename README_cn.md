@@ -16,7 +16,7 @@ Options:
 	-e # 执行产生的文本
 ```
 
-### 实例
+## 实例
 
 ``` bash
 # 生成 1到6位长度的数字所有可能性组合
@@ -28,7 +28,7 @@ crun "(root|admin):[0-9]{4,5}"
 # 注意: 如果量太大会超卡的
 ```
 
-### 下载 & 安装
+## 下载 & 安装
 ``` bash
 go get -u -v github.com/wzshiming/crun/cmd/crun
 ```
