@@ -11,8 +11,9 @@ Usage of crun:
     or crun "\d{3}"
     or crun "[0-9a-z]{2}"
     or crun "(root|admin) [0-9]{1}"
-	
-	-e # Execute the generated text
+
+Options:
+	-e # 执行产生的文本
 ```
 
 ### 实例
