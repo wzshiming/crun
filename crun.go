@@ -48,7 +48,7 @@ func (r Regexps) makes(buf []rune, off int, f func([]rune)) {
 		if len(reg.Sub) != 0 {
 			ru = reg.Sub[0][0].Rune
 		}
-		MakeCalendar(ru, reg.Min, reg.Max, ff)
+		MakePossibilities(ru, reg.Min, reg.Max, ff)
 
 	case syntax.OpAlternate: // matches alternation of Subs
 		for _, v := range reg.Sub {
@@ -168,4 +168,30 @@ func newSyntax(reg *syntax.Regexp) (out Regexps) {
 		fmt.Printf("Unsupported op %v", reg.Op)
 	}
 	return out
+}
+
+func makePossibilities(runes []rune, buf []rune, ff func(r []rune)) {
+	if len(buf) == cap(buf) {
+		ff(buf)
+		return
+	}
+	buf = append(buf, 0)
+	for i := 0; i < len(runes); i += 2 {
+		for j := runes[i]; j <= runes[i+1]; j++ {
+			buf[len(buf)-1] = j
+			makePossibilities(runes, buf, ff)
+		}
+	}
+	return
+}
+
+// Make all possibilities
+func MakePossibilities(runes []rune, min int, max int, ff func(r []rune)) {
+	if len(runes) == 1 {
+		runes = append(runes, runes[0])
+	}
+	for i := min; i <= max; i++ {
+		buf := make([]rune, 0, i)
+		makePossibilities(runes, buf, ff)
+	}
 }
