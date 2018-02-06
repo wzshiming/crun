@@ -13,7 +13,6 @@ Usage of crun:
         or crun "(root|admin) [0-9]{1}"
 ```
 
-
 ### Example
 
 ``` bash
@@ -26,16 +25,7 @@ crun "(root|admin):[0-9]{4,5}"
 # Note: If the amount is too big super card
 ```
 
-### Install
+### Download & Install
 ``` bash
-
-# Set environment variables, if set, please ignore
-mkdir -p $HOME/gopath
-export GOPATH=$HOME/gopath
-export GOBIN=$GOPATH/bin
-export PATH=$GOBIN:$PATH
-
-# Download & Install
 go get -u -v github.com/wzshiming/crun/cmd/crun
-
 ```
