@@ -37,9 +37,7 @@ export GOPATH=$HOME/gopath
 export GOBIN=$GOPATH/bin
 export PATH=$GOBIN:$PATH
 
-# 下载
-go get github.com/wzshiming/crun
+# 下载&安装
+go get -u -v github.com/wzshiming/crun/cmd/crun
 
-# 安装
-go install github.com/wzshiming/crun/crun
 ```
