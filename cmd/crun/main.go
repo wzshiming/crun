@@ -3,9 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
-	"os"
 	"os/exec"
-	"path/filepath"
 	"strings"
 
 	"github.com/wzshiming/crun"
@@ -16,13 +14,16 @@ func init() {
 }
 
 func Usage() {
-	s := filepath.Base(os.Args[0])
-	fmt.Printf("Usage of %s:\n", s)
-	fmt.Printf("\t   %s [Options] <regexp>\n", s)
-	fmt.Printf("\t    -e Execute the generated text\n")
-	fmt.Printf("\tor %s \"\\d{3}\"\n", s)
-	fmt.Printf("\tor %s \"[0-9a-z]{2}\"\n", s)
-	fmt.Printf("\tor %s \"(root|admin) [0-9]{1}\"\n", s)
+	u := `
+Usage of crun:
+       crun [Options] [regexp]
+    or crun "\d{3}"
+    or crun "[0-9a-z]{2}"
+    or crun "(root|admin) [0-9]{1}"
+	
+	-e # Execute the generated text
+	`
+	fmt.Print(u)
 }
 
 func main() {
