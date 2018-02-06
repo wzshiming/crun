@@ -1,9 +1,8 @@
 package crun
 
 import (
+	"fmt"
 	"regexp/syntax"
-
-	"gopkg.in/ffmt.v1"
 )
 
 const MoreTimes = 18
@@ -56,7 +55,7 @@ func (r Regexps) makes(buf []rune, off int, f func([]rune)) {
 			append(v, r[1:]...).makes(buf, off, f)
 		}
 	default:
-		ffmt.Mark(reg.Op)
+		fmt.Printf("Unsupported op %v", reg.Op)
 	}
 }
 
@@ -166,7 +165,7 @@ func newSyntax(reg *syntax.Regexp) (out Regexps) {
 			Sub: sub,
 		})
 	default:
-		ffmt.Mark(reg.Op)
+		fmt.Printf("Unsupported op %v", reg.Op)
 	}
 	return out
 }
