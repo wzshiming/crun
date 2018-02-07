@@ -1,7 +1,7 @@
 # Generate all possibilities based on regexp
 
-* [English](./README.md)
-* [简体中文](./README_cn.md)
+ - [English](./README.md)
+ - [简体中文](./README_cn.md)
 
 ## Usage
 

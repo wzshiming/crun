@@ -1,7 +1,7 @@
 # 根据正则生成所有可能性
 
-* [English](./README.md)
-* [简体中文](./README_cn.md)
+ - [English](./README.md)
+ - [简体中文](./README_cn.md)
 
 ## 用法
 
