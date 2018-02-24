@@ -1,9 +1,10 @@
 package crun
 
+//go:generate stringer -type Op
 type Op uint8
 
 const (
-	_ Op = 1 + iota
+	_ Op = iota
 	OpLiteral
 	OpRepeat
 	OpAlternate
