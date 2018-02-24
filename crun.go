@@ -8,7 +8,7 @@ import (
 const MoreTimes = 18
 
 type Regexp struct {
-	Op       syntax.Op
+	Op       Op
 	Sub      []Regexps
 	Rune     []rune
 	Min, Max int
@@ -41,16 +41,16 @@ func (r Regexps) makes(buf []rune, off int, f func([]rune)) {
 	}
 	switch reg.Op {
 
-	case syntax.OpLiteral: // matches Runes sequence
+	case OpLiteral: // matches Runes sequence
 		ff(reg.Rune)
-	case syntax.OpRepeat: // matches Sub[0] at least Min times, at most Max (Max == -1 is no limit)
+	case OpRepeat: // matches Sub[0] at least Min times, at most Max (Max == -1 is no limit)
 		ru := reg.Rune
 		if len(reg.Sub) != 0 {
 			ru = reg.Sub[0][0].Rune
 		}
 		MakePossibilities(ru, reg.Min, reg.Max, ff)
 
-	case syntax.OpAlternate: // matches alternation of Subs
+	case OpAlternate: // matches alternation of Subs
 		for _, v := range reg.Sub {
 			append(v, r[1:]...).makes(buf, off, f)
 		}
@@ -61,10 +61,10 @@ func (r Regexps) makes(buf []rune, off int, f func([]rune)) {
 
 func NewSyntax(s string) Regexps {
 	reg, _ := syntax.Parse(s, syntax.Perl)
-	return newSyntax(reg)
+	return NewSyntaxByRegexp(reg)
 }
 
-func newSyntax(reg *syntax.Regexp) (out Regexps) {
+func NewSyntaxByRegexp(reg *syntax.Regexp) (out Regexps) {
 	ff := func(rs ...*Regexp) {
 		out = append(out, rs...)
 	}
@@ -73,26 +73,26 @@ func newSyntax(reg *syntax.Regexp) (out Regexps) {
 	case syntax.OpEmptyMatch: // matches empty string
 	case syntax.OpLiteral: // matches Runes sequence
 		ff(&Regexp{
-			Op:   syntax.OpLiteral,
+			Op:   OpLiteral,
 			Rune: reg.Rune,
 		})
 	case syntax.OpCharClass: // matches Runes interpreted as range pair list
 		ff(&Regexp{
-			Op:   syntax.OpRepeat,
+			Op:   OpRepeat,
 			Rune: reg.Rune,
 			Max:  1,
 			Min:  1,
 		})
 	case syntax.OpAnyCharNotNL: // matches any character except newline
 		ff(&Regexp{
-			Op:   syntax.OpRepeat,
+			Op:   OpRepeat,
 			Rune: []rune{1, 127},
 			Max:  1,
 			Min:  1,
 		})
 	case syntax.OpAnyChar: // matches any character
 		ff(&Regexp{
-			Op:   syntax.OpRepeat,
+			Op:   OpRepeat,
 			Rune: []rune{1, 127},
 			Max:  1,
 			Min:  1,
@@ -105,15 +105,15 @@ func newSyntax(reg *syntax.Regexp) (out Regexps) {
 	case syntax.OpNoWordBoundary: // matches word non-boundary `\B`
 	case syntax.OpCapture: // capturing subexpression with index Cap, optional name Name
 		for _, v := range reg.Sub {
-			ff(newSyntax(v)...)
+			ff(NewSyntaxByRegexp(v)...)
 		}
 	case syntax.OpStar: // matches Sub[0] zero or more times
 		sub := []Regexps{}
 		for _, v := range reg.Sub {
-			sub = append(sub, newSyntax(v))
+			sub = append(sub, NewSyntaxByRegexp(v))
 		}
 		ff(&Regexp{
-			Op:  syntax.OpRepeat,
+			Op:  OpRepeat,
 			Sub: sub,
 			Max: MoreTimes,
 			Min: 0,
@@ -121,10 +121,10 @@ func newSyntax(reg *syntax.Regexp) (out Regexps) {
 	case syntax.OpPlus: // matches Sub[0] one or more times
 		sub := []Regexps{}
 		for _, v := range reg.Sub {
-			sub = append(sub, newSyntax(v))
+			sub = append(sub, NewSyntaxByRegexp(v))
 		}
 		ff(&Regexp{
-			Op:  syntax.OpRepeat,
+			Op:  OpRepeat,
 			Sub: sub,
 			Max: MoreTimes,
 			Min: 1,
@@ -132,10 +132,10 @@ func newSyntax(reg *syntax.Regexp) (out Regexps) {
 	case syntax.OpQuest: // matches Sub[0] zero or one times
 		sub := []Regexps{}
 		for _, v := range reg.Sub {
-			sub = append(sub, newSyntax(v))
+			sub = append(sub, NewSyntaxByRegexp(v))
 		}
 		ff(&Regexp{
-			Op:  syntax.OpRepeat,
+			Op:  OpRepeat,
 			Sub: sub,
 			Max: 1,
 			Min: 0,
@@ -143,25 +143,25 @@ func newSyntax(reg *syntax.Regexp) (out Regexps) {
 	case syntax.OpRepeat: // matches Sub[0] at least Min times, at most Max (Max == -1 is no limit)
 		sub := []Regexps{}
 		for _, v := range reg.Sub {
-			sub = append(sub, newSyntax(v))
+			sub = append(sub, NewSyntaxByRegexp(v))
 		}
 		ff(&Regexp{
-			Op:  syntax.OpRepeat,
+			Op:  OpRepeat,
 			Sub: sub,
 			Max: reg.Max,
 			Min: reg.Min,
 		})
 	case syntax.OpConcat: // matches concatenation of Subs
 		for _, v := range reg.Sub {
-			ff(newSyntax(v)...)
+			ff(NewSyntaxByRegexp(v)...)
 		}
 	case syntax.OpAlternate: // matches alternation of Subs
 		sub := []Regexps{}
 		for _, v := range reg.Sub {
-			sub = append(sub, newSyntax(v))
+			sub = append(sub, NewSyntaxByRegexp(v))
 		}
 		ff(&Regexp{
-			Op:  syntax.OpAlternate,
+			Op:  OpAlternate,
 			Sub: sub,
 		})
 	default:
