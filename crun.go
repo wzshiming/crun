@@ -6,6 +6,7 @@ import (
 	"regexp/syntax"
 )
 
+// MoreTimes Maximum omitted default value
 const MoreTimes = 18
 
 type Regexp struct {
@@ -17,6 +18,7 @@ type Regexp struct {
 
 type Regexps []*Regexp
 
+// Size The number of possibilities that can match regularity
 func (r Regexps) Size() int {
 	s := 0
 	r.size(&s)
@@ -56,18 +58,18 @@ func (r Regexps) size(s *int) {
 
 }
 
-func (r Regexps) Makes(f func([]rune)) {
+// Make all possibilities
+func (r Regexps) Makes(f func([]rune) bool) bool {
 	buf := []rune{}
-	r.makes(buf, 0, f)
+	return r.ranges(buf, 0, f)
 }
 
-func (r Regexps) makes(buf []rune, off int, f func([]rune)) {
+func (r Regexps) ranges(buf []rune, off int, f func([]rune) bool) bool {
 	if len(r) == 0 {
-		f(buf)
-		return
+		return f(buf)
 	}
 	reg := r[0]
-	ff := func(s []rune) {
+	ff := func(s []rune) bool {
 		l := len(s) - (len(buf) - off)
 		if l > 0 {
 			buf = append(buf, make([]rune, l)...)
@@ -76,26 +78,28 @@ func (r Regexps) makes(buf []rune, off int, f func([]rune)) {
 		}
 		copy(buf[off:], s)
 
-		r[1:].makes(buf, off+len(s), f)
-
+		return r[1:].ranges(buf, off+len(s), f)
 	}
-	switch reg.Op {
 
+	switch reg.Op {
 	case OpLiteral: // matches Runes sequence
-		ff(reg.Rune)
+		return ff(reg.Rune)
 	case OpRepeat: // matches Sub[0] at least Min times, at most Max (Max == -1 is no limit)
 		ru := reg.Rune
 		if len(reg.Sub) != 0 {
 			ru = reg.Sub[0][0].Rune
 		}
-		MakePossibilities(ru, reg.Min, reg.Max, ff)
-
+		return MakePossibilities(ru, reg.Min, reg.Max, ff)
 	case OpAlternate: // matches alternation of Subs
 		for _, v := range reg.Sub {
-			append(v, r[1:]...).makes(buf, off, f)
+			if !append(v, r[1:]...).ranges(buf, off, f) {
+				return false
+			}
 		}
+		return true
 	default:
 		fmt.Printf("Unsupported op %v", reg.Op)
+		return false
 	}
 }
 
@@ -210,30 +214,34 @@ func NewSyntaxByRegexp(reg *syntax.Regexp) (out Regexps) {
 	return out
 }
 
-func makePossibilities(runes []rune, buf []rune, ff func(r []rune)) {
+func makePossibilities(runes []rune, buf []rune, ff func(r []rune) bool) bool {
 	if len(buf) == cap(buf) {
-		ff(buf)
-		return
+		return ff(buf)
 	}
 	buf = append(buf, 0)
 	for i := 0; i < len(runes); i += 2 {
 		for j := runes[i]; j <= runes[i+1]; j++ {
 			buf[len(buf)-1] = j
-			makePossibilities(runes, buf, ff)
+			if !makePossibilities(runes, buf, ff) {
+				return false
+			}
 		}
 	}
-	return
+	return true
 }
 
 // Make all possibilities
-func MakePossibilities(runes []rune, min int, max int, ff func(r []rune)) {
+func MakePossibilities(runes []rune, min int, max int, ff func(r []rune) bool) bool {
 	if len(runes) == 1 {
 		runes = append(runes, runes[0])
 	}
 	for i := min; i <= max; i++ {
 		buf := make([]rune, 0, i)
-		makePossibilities(runes, buf, ff)
+		if !makePossibilities(runes, buf, ff) {
+			return false
+		}
 	}
+	return true
 }
 
 func SizePossibilities(runes []rune, min int, max int) int {

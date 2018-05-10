@@ -27,10 +27,15 @@ Options:
 	fmt.Print(u)
 }
 
-func main() {
-	e := flag.Bool("e", false, "exec")
+var (
+	e = flag.Bool("e", false, "exec")
+)
 
+func init() {
 	flag.Parse()
+}
+
+func main() {
 
 	format := strings.Join(flag.Args(), " ")
 	if format == "" {
@@ -39,7 +44,7 @@ func main() {
 	}
 
 	if *e {
-		crun.NewSyntax(format).Makes(func(s []rune) {
+		crun.NewSyntax(format).Makes(func(s []rune) bool {
 			ss := strings.Split(string(s), " ")
 			out, err := exec.Command(ss[0], ss[1:]...).Output()
 			if err != nil {
@@ -47,10 +52,12 @@ func main() {
 			} else {
 				fmt.Println(string(out))
 			}
+			return true
 		})
 	} else {
-		crun.NewSyntax(format).Makes(func(s []rune) {
+		crun.NewSyntax(format).Makes(func(s []rune) bool {
 			fmt.Println(string(s))
+			return true
 		})
 	}
 
