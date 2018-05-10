@@ -58,8 +58,8 @@ func (r Regexps) size(s *int) {
 
 }
 
-// Make all possibilities
-func (r Regexps) Makes(f func([]rune) bool) bool {
+// Range all possibilities
+func (r Regexps) Range(f func([]rune) bool) bool {
 	buf := []rune{}
 	return r.ranges(buf, 0, f)
 }
@@ -89,7 +89,7 @@ func (r Regexps) ranges(buf []rune, off int, f func([]rune) bool) bool {
 		if len(reg.Sub) != 0 {
 			ru = reg.Sub[0][0].Rune
 		}
-		return MakePossibilities(ru, reg.Min, reg.Max, ff)
+		return RangePossibilities(ru, reg.Min, reg.Max, ff)
 	case OpAlternate: // matches alternation of Subs
 		for _, v := range reg.Sub {
 			if !append(v, r[1:]...).ranges(buf, off, f) {
@@ -214,7 +214,7 @@ func NewSyntaxByRegexp(reg *syntax.Regexp) (out Regexps) {
 	return out
 }
 
-func makePossibilities(runes []rune, buf []rune, ff func(r []rune) bool) bool {
+func rangePossibilities(runes []rune, buf []rune, ff func(r []rune) bool) bool {
 	if len(buf) == cap(buf) {
 		return ff(buf)
 	}
@@ -222,7 +222,7 @@ func makePossibilities(runes []rune, buf []rune, ff func(r []rune) bool) bool {
 	for i := 0; i < len(runes); i += 2 {
 		for j := runes[i]; j <= runes[i+1]; j++ {
 			buf[len(buf)-1] = j
-			if !makePossibilities(runes, buf, ff) {
+			if !rangePossibilities(runes, buf, ff) {
 				return false
 			}
 		}
@@ -230,14 +230,14 @@ func makePossibilities(runes []rune, buf []rune, ff func(r []rune) bool) bool {
 	return true
 }
 
-// Make all possibilities
-func MakePossibilities(runes []rune, min int, max int, ff func(r []rune) bool) bool {
+// Range all possibilities
+func RangePossibilities(runes []rune, min int, max int, ff func(r []rune) bool) bool {
 	if len(runes) == 1 {
 		runes = append(runes, runes[0])
 	}
 	for i := min; i <= max; i++ {
 		buf := make([]rune, 0, i)
-		if !makePossibilities(runes, buf, ff) {
+		if !rangePossibilities(runes, buf, ff) {
 			return false
 		}
 	}
