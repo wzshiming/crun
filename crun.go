@@ -2,6 +2,7 @@ package crun
 
 import (
 	"fmt"
+	"math"
 	"regexp/syntax"
 )
 
@@ -15,6 +16,45 @@ type Regexp struct {
 }
 
 type Regexps []*Regexp
+
+func (r Regexps) Size() int {
+	s := 0
+	r.size(&s)
+	return s
+}
+
+func (r Regexps) size(s *int) {
+	if len(r) == 0 {
+		return
+	}
+	if *s == 0 {
+		*s += 1
+	}
+
+	reg := r[0]
+
+	switch reg.Op {
+	case OpLiteral: // matches Runes sequence
+		r[1:].size(s)
+		return
+	case OpRepeat: // matches Sub[0] at least Min times, at most Max (Max == -1 is no limit)
+		ru := reg.Rune
+		if len(reg.Sub) != 0 {
+			ru = reg.Sub[0][0].Rune
+		}
+		*s *= SizePossibilities(ru, reg.Min, reg.Max)
+		r[1:].size(s)
+		return
+	case OpAlternate: // matches alternation of Subs
+		for _, v := range reg.Sub {
+			append(v, r[1:]...).size(s)
+		}
+		return
+	default:
+		return
+	}
+
+}
 
 func (r Regexps) Makes(f func([]rune)) {
 	buf := []rune{}
@@ -194,4 +234,20 @@ func MakePossibilities(runes []rune, min int, max int, ff func(r []rune)) {
 		buf := make([]rune, 0, i)
 		makePossibilities(runes, buf, ff)
 	}
+}
+
+func SizePossibilities(runes []rune, min int, max int) int {
+	if len(runes) == 1 {
+		runes = append(runes, runes[0])
+	}
+	sum := 0
+	for i := 0; i < len(runes); i += 2 {
+		sum += int(runes[i+1]-runes[i]) + 1
+	}
+
+	r := 0
+	for i := min; i <= max; i++ {
+		r += int(math.Pow(float64(sum), float64(i)))
+	}
+	return r
 }
