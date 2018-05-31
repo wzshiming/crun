@@ -33,8 +33,6 @@ crun "(root|admin):[0-9]{4,5}"
 go get -u -v github.com/wzshiming/crun/cmd/crun
 ```
 
-## MIT许可证
+## 许可证
 
-版权所有©2017-2018 wzshiming <[https://github.com/wzshiming](https://github.com/wzshiming)>。
-
-MIT是[MIT许可证](https://opensource.org/licenses/MIT)许可的开源软件。
+软包根据MIT License。有关完整的许可证文本，请参阅[LICENSE](https://github.com/wzshiming/crun/blob/master/LICENSE)。

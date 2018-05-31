@@ -33,8 +33,7 @@ crun "(root|admin):[0-9]{4,5}"
 go get -u -v github.com/wzshiming/crun/cmd/crun
 ```
 
-## MIT License
 
-Copyright © 2017-2018 wzshiming<[https://github.com/wzshiming](https://github.com/wzshiming)>.
+## License
 
-MIT is open-sourced software licensed under the [MIT License](https://opensource.org/licenses/MIT).
+Pouch is licensed under the MIT License. See [LICENSE](https://github.com/wzshiming/crun/blob/master/LICENSE) for the full license text.
