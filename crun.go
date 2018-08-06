@@ -44,7 +44,7 @@ func (r Regexps) size(s *int) {
 		if len(reg.Sub) != 0 {
 			ru = reg.Sub[0][0].Rune
 		}
-		*s *= SizePossibilities(ru, reg.Min, reg.Max)
+		*s *= sizePossibilities(ru, reg.Min, reg.Max)
 		r[1:].size(s)
 		return
 	case OpAlternate: // matches alternation of Subs
@@ -89,7 +89,7 @@ func (r Regexps) ranges(buf []rune, off int, f func([]rune) bool) bool {
 		if len(reg.Sub) != 0 {
 			ru = reg.Sub[0][0].Rune
 		}
-		return RangePossibilities(ru, reg.Min, reg.Max, ff)
+		return rangePossibilities(ru, reg.Min, reg.Max, ff)
 	case OpAlternate: // matches alternation of Subs
 		for _, v := range reg.Sub {
 			if !append(v, r[1:]...).ranges(buf, off, f) {
@@ -214,7 +214,7 @@ func NewSyntaxByRegexp(reg *syntax.Regexp) (out Regexps) {
 	return out
 }
 
-func rangePossibilities(runes []rune, buf []rune, ff func(r []rune) bool) bool {
+func rangePossibilitie(runes []rune, buf []rune, ff func(r []rune) bool) bool {
 	if len(buf) == cap(buf) {
 		return ff(buf)
 	}
@@ -222,7 +222,7 @@ func rangePossibilities(runes []rune, buf []rune, ff func(r []rune) bool) bool {
 	for i := 0; i < len(runes); i += 2 {
 		for j := runes[i]; j <= runes[i+1]; j++ {
 			buf[len(buf)-1] = j
-			if !rangePossibilities(runes, buf, ff) {
+			if !rangePossibilitie(runes, buf, ff) {
 				return false
 			}
 		}
@@ -230,21 +230,22 @@ func rangePossibilities(runes []rune, buf []rune, ff func(r []rune) bool) bool {
 	return true
 }
 
-// Range all possibilities
-func RangePossibilities(runes []rune, min int, max int, ff func(r []rune) bool) bool {
+// rangePossibilities range all possibilities.
+func rangePossibilities(runes []rune, min int, max int, ff func(r []rune) bool) bool {
 	if len(runes) == 1 {
 		runes = append(runes, runes[0])
 	}
 	for i := min; i <= max; i++ {
 		buf := make([]rune, 0, i)
-		if !rangePossibilities(runes, buf, ff) {
+		if !rangePossibilitie(runes, buf, ff) {
 			return false
 		}
 	}
 	return true
 }
 
-func SizePossibilities(runes []rune, min int, max int) int {
+// sizePossibilities returns size of all possibilities.
+func sizePossibilities(runes []rune, min int, max int) int {
 	if len(runes) == 1 {
 		runes = append(runes, runes[0])
 	}
