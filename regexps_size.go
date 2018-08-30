@@ -19,26 +19,55 @@ func size(r Regexps, s *int) {
 		size(r[1:], s)
 		return
 	case OpRepeat: // matches Sub[0] at least Min times, at most Max (Max == -1 is no limit)
-		ru := reg.Rune
-		if len(reg.Sub) != 0 {
-			ru = reg.Sub[0][0].Rune
+		if len(reg.Sub) == 0 {
+			*s *= sizeRepeatPossibilities(reg.Rune, reg.Min, reg.Max)
+		} else {
+			*s *= sizePossibilities(reg.Sub, reg.Min, reg.Max)
 		}
-		*s *= sizePossibilities(ru, reg.Min, reg.Max)
 		size(r[1:], s)
 		return
 	case OpAlternate: // matches alternation of Subs
+		sum := 0
 		for _, v := range reg.Sub {
-			size(append(v, r[1:]...), s)
+			ns := 0
+			size(append(v, r[1:]...), &ns)
+			sum += ns
 		}
+		*s *= sum
 		return
 	default:
 		return
 	}
-
 }
 
 // sizePossibilities returns size of all possibilities.
-func sizePossibilities(runes []rune, min int, max int) int {
+func sizePossibilities(regs []Regexps, min int, max int) int {
+	sum := 1
+	for _, reg := range regs {
+		i := 0
+		size(reg, &i)
+		sum *= i
+	}
+
+	// Geometric series formula
+	// if q != 1 then x1*(1-q^n)/(1-q) or (x1-xn*q)/(1-q)
+	// if q == 1 then x1*n
+	q := float64(sum)
+	x1 := math.Pow(q, float64(min))
+	n := 1 + max - min
+	if n == 1 {
+		return int(x1)
+	}
+	if sum != 1 {
+		sum = int(x1 * (1 - math.Pow(q, float64(n))) / (1 - q))
+	} else {
+		sum = int(x1 * float64(n))
+	}
+	return sum
+}
+
+// sizeRepeatPossibilities returns size of all possibilities.
+func sizeRepeatPossibilities(runes []rune, min int, max int) int {
 	if len(runes) == 1 {
 		runes = append(runes, runes[0])
 	}
