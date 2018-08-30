@@ -44,8 +44,8 @@ func main() {
 	}
 
 	if *e {
-		crun.NewSyntax(format).Range(func(s []rune) bool {
-			ss := strings.Split(string(s), " ")
+		crun.NewSyntax(format).Range(func(s crun.String) bool {
+			ss := strings.Split(s.String(), " ")
 			out, err := exec.Command(ss[0], ss[1:]...).Output()
 			if err != nil {
 				fmt.Println(err)
@@ -55,8 +55,8 @@ func main() {
 			return true
 		})
 	} else {
-		crun.NewSyntax(format).Range(func(s []rune) bool {
-			fmt.Println(string(s))
+		crun.NewSyntax(format).Range(func(s crun.String) bool {
+			fmt.Println(s)
 			return true
 		})
 	}
