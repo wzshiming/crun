@@ -141,3 +141,16 @@ func (r Regexps) Range(f func([]rune) bool) bool {
 	buf := []rune{}
 	return ranges(r, buf, 0, f)
 }
+
+// Rand all possibilities
+func (r Regexps) Rand(f func([]rune) bool) {
+	buf := []rune{}
+	for {
+		buf = buf[:0]
+		buf = rands(r, buf)
+		if !f(buf) {
+			break
+		}
+	}
+	return
+}
