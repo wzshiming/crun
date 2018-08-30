@@ -18,7 +18,11 @@ type Regexp struct {
 type Regexps []*Regexp
 
 func NewSyntax(s string) Regexps {
-	reg, _ := syntax.Parse(s, syntax.Perl)
+	reg, err := syntax.Parse(s, syntax.Perl)
+	if err != nil {
+		fmt.Println(err)
+		return nil
+	}
 	return NewSyntaxByRegexp(reg)
 }
 
