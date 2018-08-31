@@ -3,7 +3,9 @@ package main
 import (
 	"flag"
 	"fmt"
+	"math/rand"
 	"strings"
+	"time"
 
 	"github.com/wzshiming/crun"
 )
@@ -44,6 +46,7 @@ func main() {
 	}
 
 	if *r {
+		rand.Seed(time.Now().UnixNano())
 		cs := crun.NewSyntax(format)
 		for i := 0; i != *l; i++ {
 			fmt.Println(cs.Rand())
