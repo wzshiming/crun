@@ -3,17 +3,16 @@ package main
 import (
 	"flag"
 	"fmt"
-	"os/exec"
 	"strings"
 
 	"github.com/wzshiming/crun"
 )
 
 func init() {
-	flag.Usage = Usage
+	flag.Usage = usage
 }
 
-func Usage() {
+func usage() {
 	u := `
 Usage of crun:
        crun [Options] [regexp]
@@ -22,13 +21,14 @@ Usage of crun:
     or crun "(root|admin) [0-9]{1}"
 
 Options:
-	-e # Execute the generated text
-	`
+`
 	fmt.Print(u)
+	flag.PrintDefaults()
 }
 
 var (
-	e = flag.Bool("e", false, "exec")
+	r = flag.Bool("r", false, "Random")
+	l = flag.Int("l", 10, "Limit; If equal to -1 then unlimited")
 )
 
 func init() {
@@ -43,22 +43,20 @@ func main() {
 		return
 	}
 
-	if *e {
-		crun.NewSyntax(format).Range(func(s crun.String) bool {
-			ss := strings.Split(s.String(), " ")
-			out, err := exec.Command(ss[0], ss[1:]...).Output()
-			if err != nil {
-				fmt.Println(err)
-			} else {
-				fmt.Println(string(out))
-			}
-			return true
-		})
+	if *r {
+		cs := crun.NewSyntax(format)
+		for i := 0; i != *l; i++ {
+			fmt.Println(cs.Rand())
+		}
 	} else {
+		i := 0
 		crun.NewSyntax(format).Range(func(s crun.String) bool {
+			if i == *l {
+				return false
+			}
 			fmt.Println(s)
+			i++
 			return true
 		})
 	}
-
 }
