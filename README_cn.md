@@ -9,19 +9,6 @@
 - [English](./README.md)
 - [简体中文](./README_cn.md)
 
-## 用法
-
-``` log
-Usage of crun:
-       crun [Options] [regexp]
-    or crun "\d{3}"
-    or crun "[0-9a-z]{2}"
-    or crun "(root|admin) [0-9]{1}"
-
-Options:
-    -e # 执行产生的文本
-```
-
 ## 实例
 
 ``` bash
