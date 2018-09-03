@@ -3,6 +3,7 @@ package crun
 import (
 	"fmt"
 	"regexp/syntax"
+	"strconv"
 )
 
 // MoreTimes Maximum omitted default value
@@ -17,13 +18,28 @@ type Regexp struct {
 
 type Regexps []*Regexp
 
-func NewSyntax(s string) Regexps {
-	reg, err := syntax.Parse(s, syntax.Perl)
+func Compile(str string) (Regexps, error) {
+	reg, err := syntax.Parse(str, syntax.Perl)
+	if err != nil {
+		return nil, fmt.Errorf("crun: Compile(`%s`): %s", strconv.Quote(str), err.Error())
+	}
+	return NewSyntaxByRegexp(reg), nil
+}
+
+func MustCompile(str string) Regexps {
+	reg, err := Compile(str)
+	if err != nil {
+		panic(err)
+	}
+	return reg
+}
+
+func NewSyntax(str string) Regexps {
+	reg, err := Compile(str)
 	if err != nil {
 		fmt.Println(err)
-		return nil
 	}
-	return NewSyntaxByRegexp(reg)
+	return reg
 }
 
 func NewSyntaxByRegexp(reg *syntax.Regexp) (out Regexps) {
