@@ -157,20 +157,13 @@ func (r Regexps) Size() int {
 }
 
 // Range all possibilities
-func (r Regexps) Range(f func(String) bool) bool {
+func (r Regexps) Range(f func(string) bool) bool {
 	return ranges(r, []rune{}, 0, func(s []rune) bool {
-		return f(String(s))
+		return f(string(s))
 	})
 }
 
 // Rand possibilities
-func (r Regexps) Rand() String {
-	return String(rands(r, []rune{}))
-}
-
-// String Encapsulated runes.
-type String []rune
-
-func (s String) String() string {
-	return string(s)
+func (r Regexps) Rand() string {
+	return string(rands(r, []rune{}))
 }

@@ -39,14 +39,14 @@ func TestCrun(t *testing.T) {
 
 		max := 10
 		for i := 0; i != max && i != tt.want; i++ {
-			if got := cr.Rand(); !req.MatchString(got.String()) {
+			if got := cr.Rand(); !req.MatchString(got) {
 				t.Errorf("`%s` Rand() = %v", tt.reg, got)
 			}
 		}
 
 		i := 0
-		cr.Range(func(got String) bool {
-			if !req.MatchString(got.String()) {
+		cr.Range(func(got string) bool {
+			if !req.MatchString(got) {
 				t.Errorf("`%s` Range() = %v", tt.reg, got)
 			}
 			i++

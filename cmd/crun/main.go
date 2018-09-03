@@ -53,7 +53,7 @@ func main() {
 		}
 	} else {
 		i := 0
-		crun.NewSyntax(format).Range(func(s crun.String) bool {
+		crun.NewSyntax(format).Range(func(s string) bool {
 			if i == *l {
 				return false
 			}
