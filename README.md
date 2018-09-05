@@ -1,4 +1,4 @@
-# Generate all possibilities based on regexp
+# Generate matching strings based on regular expressions
 
 [![Build Status](https://travis-ci.org/wzshiming/crun.svg?branch=master)](https://travis-ci.org/wzshiming/crun)
 [![Go Report Card](https://goreportcard.com/badge/github.com/wzshiming/crun)](https://goreportcard.com/report/github.com/wzshiming/crun)
@@ -6,19 +6,17 @@
 [![GitHub license](https://img.shields.io/github/license/wzshiming/crun.svg)](https://github.com/wzshiming/crun/blob/master/LICENSE)
 [![cover.run](https://cover.run/go/github.com/wzshiming/crun.svg?style=flat&tag=golang-1.10)](https://cover.run/go?tag=golang-1.10&repo=github.com%2Fwzshiming%2Fcrun)
 
-- [English](./README.md)
-- [简体中文](./README_cn.md)
+- [English](https://github.com/wzshiming/crun/blob/master/README.md)
+- [简体中文](https://github.com/wzshiming/crun/blob/master/README_cn.md)
 
 ## Example
 
 ``` bash
 # Generates a number of all possible combinations of 1 to 6 digits in length
-crun "\d{1,6}"
+> crun "\d{1,6}"
 
-# Violence aesthetics
-crun "(root|admin):[0-9]{4,5}"
-
-# Note: If the number is too large, super slow
+# Generate random 5 possibilities
+> crun -r -l 5 "(root|admin):[0-9]{4,5}"
 ```
 
 ## Download & Install
