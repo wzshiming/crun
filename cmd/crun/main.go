@@ -30,7 +30,7 @@ Options:
 
 var (
 	r = flag.Bool("r", false, "Random")
-	l = flag.Int("l", 10, "Limit; If equal to -1 then unlimited")
+	l = flag.Int("l", 100, "Limit; If equal to -1 then unlimited")
 )
 
 func init() {
@@ -45,15 +45,20 @@ func main() {
 		return
 	}
 
+	cs, err := crun.Compile(format)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
 	if *r {
 		rand.Seed(time.Now().UnixNano())
-		cs := crun.NewSyntax(format)
 		for i := 0; i != *l; i++ {
 			fmt.Println(cs.Rand())
 		}
 	} else {
 		i := 0
-		crun.NewSyntax(format).Range(func(s string) bool {
+		cs.Range(func(s string) bool {
 			if i == *l {
 				return false
 			}

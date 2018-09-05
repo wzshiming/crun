@@ -9,6 +9,7 @@ import (
 // MoreTimes Maximum omitted default value
 const MoreTimes = 18
 
+// Regexp syntax tree translated from regexp/syntax
 type Regexp struct {
 	Op       Op
 	Sub      []Regexps
@@ -16,16 +17,21 @@ type Regexp struct {
 	Min, Max int
 }
 
+// Regexps syntax tree translated from regexp/syntax
 type Regexps []*Regexp
 
+// Compile parses a regular expression and returns.
 func Compile(str string) (Regexps, error) {
 	reg, err := syntax.Parse(str, syntax.Perl)
 	if err != nil {
 		return nil, fmt.Errorf("crun: Compile(`%s`): %s", strconv.Quote(str), err.Error())
 	}
-	return NewSyntaxByRegexp(reg), nil
+	return NewRegexps(reg), nil
 }
 
+// MustCompile is like Compile but panics if the expression cannot be parsed.
+// It simplifies safe initialization of global variables holding compiled regular
+// expressions.
 func MustCompile(str string) Regexps {
 	reg, err := Compile(str)
 	if err != nil {
@@ -34,15 +40,8 @@ func MustCompile(str string) Regexps {
 	return reg
 }
 
-func NewSyntax(str string) Regexps {
-	reg, err := Compile(str)
-	if err != nil {
-		fmt.Println(err)
-	}
-	return reg
-}
-
-func NewSyntaxByRegexp(reg *syntax.Regexp) (out Regexps) {
+// NewRegexps returns regexps translated from regexp/syntax
+func NewRegexps(reg *syntax.Regexp) (out Regexps) {
 	ff := func(rs ...*Regexp) {
 		out = append(out, rs...)
 	}
@@ -84,12 +83,12 @@ func NewSyntaxByRegexp(reg *syntax.Regexp) (out Regexps) {
 	case syntax.OpNoWordBoundary: // matches word non-boundary `\B`
 	case syntax.OpCapture: // capturing subexpression with index Cap, optional name Name
 		for _, v := range reg.Sub {
-			ff(NewSyntaxByRegexp(v)...)
+			ff(NewRegexps(v)...)
 		}
 	case syntax.OpStar: // matches Sub[0] zero or more times
 		sub := []Regexps{}
 		for _, v := range reg.Sub {
-			sub = append(sub, NewSyntaxByRegexp(v))
+			sub = append(sub, NewRegexps(v))
 		}
 		ff(&Regexp{
 			Op:  OpRepeat,
@@ -100,7 +99,7 @@ func NewSyntaxByRegexp(reg *syntax.Regexp) (out Regexps) {
 	case syntax.OpPlus: // matches Sub[0] one or more times
 		sub := []Regexps{}
 		for _, v := range reg.Sub {
-			sub = append(sub, NewSyntaxByRegexp(v))
+			sub = append(sub, NewRegexps(v))
 		}
 		ff(&Regexp{
 			Op:  OpRepeat,
@@ -111,7 +110,7 @@ func NewSyntaxByRegexp(reg *syntax.Regexp) (out Regexps) {
 	case syntax.OpQuest: // matches Sub[0] zero or one times
 		sub := []Regexps{}
 		for _, v := range reg.Sub {
-			sub = append(sub, NewSyntaxByRegexp(v))
+			sub = append(sub, NewRegexps(v))
 		}
 		ff(&Regexp{
 			Op:  OpRepeat,
@@ -122,7 +121,7 @@ func NewSyntaxByRegexp(reg *syntax.Regexp) (out Regexps) {
 	case syntax.OpRepeat: // matches Sub[0] at least Min times, at most Max (Max == -1 is no limit)
 		sub := []Regexps{}
 		for _, v := range reg.Sub {
-			sub = append(sub, NewSyntaxByRegexp(v))
+			sub = append(sub, NewRegexps(v))
 		}
 		ff(&Regexp{
 			Op:  OpRepeat,
@@ -132,12 +131,12 @@ func NewSyntaxByRegexp(reg *syntax.Regexp) (out Regexps) {
 		})
 	case syntax.OpConcat: // matches concatenation of Subs
 		for _, v := range reg.Sub {
-			ff(NewSyntaxByRegexp(v)...)
+			ff(NewRegexps(v)...)
 		}
 	case syntax.OpAlternate: // matches alternation of Subs
 		sub := []Regexps{}
 		for _, v := range reg.Sub {
-			sub = append(sub, NewSyntaxByRegexp(v))
+			sub = append(sub, NewRegexps(v))
 		}
 		ff(&Regexp{
 			Op:  OpAlternate,

@@ -35,7 +35,7 @@ func TestCrun(t *testing.T) {
 			continue
 		}
 
-		cr := NewSyntax(tt.reg)
+		cr := MustCompile(tt.reg)
 
 		max := 10
 		for i := 0; i != max && i != tt.want; i++ {
