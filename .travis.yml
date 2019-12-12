@@ -1,9 +1,23 @@
 language: go
-go:
-  - "1.6"
-  - "1.7"
-  - "1.8"
-  - "1.9"
-  - "1.10"
-  - "1.11"
-  - master
+sudo: false
+notifications:
+  email: false
+jobs:
+  include:
+    - go: 1.13.x
+      stage: deploy
+      go_import_path: github.com/wzshiming/crun
+      install: skip
+      script: skip
+      before_deploy:
+        - BASENAME=crun bash -c "$(curl -fsSL https://github.com/wzshiming/my-shell/raw/master/build_all.bash)"
+      deploy:
+        provider: releases
+        api_key: $CI_TOKEN
+        file_glob: true
+        file: release/*
+        skip_cleanup: true
+        on:
+          repo: wzshiming/crun
+          branch: master
+          tags: true
