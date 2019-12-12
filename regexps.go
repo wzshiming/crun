@@ -64,14 +64,14 @@ func NewRegexps(reg *syntax.Regexp) (out Regexps) {
 	case syntax.OpAnyCharNotNL: // matches any character except newline
 		ff(&Regexp{
 			Op:   OpRepeat,
-			Rune: []rune{1, 127},
+			Rune: []rune{33, 126},
 			Max:  1,
 			Min:  1,
 		})
 	case syntax.OpAnyChar: // matches any character
 		ff(&Regexp{
 			Op:   OpRepeat,
-			Rune: []rune{1, 127},
+			Rune: []rune{33, 126},
 			Max:  1,
 			Min:  1,
 		})
