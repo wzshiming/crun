@@ -175,12 +175,24 @@ func (r Regexps) Size() int {
 
 // Range all possibilities
 func (r Regexps) Range(f func(string) bool) bool {
-	return ranges(r, []rune{}, 0, func(s []rune) bool {
+	return r.RangeWithRunes(func(s []rune) bool {
 		return f(string(s))
+	})
+}
+
+// RangeWithRuns all possibilities
+func (r Regexps) RangeWithRunes(f func([]rune) bool) bool {
+	return ranges(r, []rune{}, 0, func(s []rune) bool {
+		return f(s)
 	})
 }
 
 // Rand possibilities
 func (r Regexps) Rand() string {
-	return string(rands(r, []rune{}))
+	return string(r.RandWithRunes())
+}
+
+// RandWithRunes possibilities
+func (r Regexps) RandWithRunes() []rune {
+	return rands(r, []rune{})
 }
