@@ -111,7 +111,7 @@ func (o *Optional) NewRegexps(reg *syntax.Regexp) (out Regexps) {
 		ff(&Regexp{
 			Op:  OpRepeat,
 			Sub: sub,
-			Max: MoreTimes,
+			Max: o.MoreTimes,
 			Min: 0,
 		})
 	case syntax.OpPlus: // matches Sub[0] one or more times
@@ -122,7 +122,7 @@ func (o *Optional) NewRegexps(reg *syntax.Regexp) (out Regexps) {
 		ff(&Regexp{
 			Op:  OpRepeat,
 			Sub: sub,
-			Max: MoreTimes,
+			Max: o.MoreTimes,
 			Min: 1,
 		})
 	case syntax.OpQuest: // matches Sub[0] zero or one times
