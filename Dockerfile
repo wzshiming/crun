@@ -9,4 +9,4 @@ RUN upx /go/bin/*
 
 FROM scratch
 COPY --from=upx /go/bin/ /usr/local/bin/
-ENTRYPOINT ["crun"]
+ENTRYPOINT ["/usr/local/bin/crun"]
