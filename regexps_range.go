@@ -1,7 +1,7 @@
 package crun
 
 import (
-	"fmt"
+	"log"
 )
 
 func ranges(r Regexps, buf []rune, off int, f func([]rune) bool) bool {
@@ -37,7 +37,7 @@ func ranges(r Regexps, buf []rune, off int, f func([]rune) bool) bool {
 		}
 		return true
 	default:
-		fmt.Printf("Unsupported op %v", reg.Op)
+		log.Printf("crun: unsupported op %v", reg.Op)
 		return false
 	}
 }

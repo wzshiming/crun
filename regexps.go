@@ -2,8 +2,10 @@ package crun
 
 import (
 	"fmt"
+	"log"
+	"math/rand"
 	"regexp/syntax"
-	"strconv"
+	"time"
 )
 
 // MoreTimes Maximum omitted default value
@@ -24,7 +26,7 @@ type Regexps []*Regexp
 func Compile(str string) (Regexps, error) {
 	reg, err := syntax.Parse(str, syntax.Perl)
 	if err != nil {
-		return nil, fmt.Errorf("crun: Compile(`%s`): %s", strconv.Quote(str), err.Error())
+		return nil, fmt.Errorf("crun: Compile(%q): %w", str, err)
 	}
 	return NewRegexps(reg), nil
 }
@@ -56,6 +58,7 @@ type Optional struct {
 	MoreTimes    int
 	AnyCharNotNL []rune
 	AnyChar      []rune
+	Rand         Rand
 }
 
 // NewRegexps returns regexps translated from regexp/syntax
@@ -161,7 +164,7 @@ func (o *Optional) NewRegexps(reg *syntax.Regexp) (out Regexps) {
 			Sub: sub,
 		})
 	default:
-		fmt.Printf("Unsupported op %v", reg.Op)
+		log.Printf("crun: unsupported op %v", reg.Op)
 	}
 	return out
 }
@@ -194,5 +197,17 @@ func (r Regexps) Rand() string {
 
 // RandWithRunes possibilities
 func (r Regexps) RandWithRunes() []rune {
-	return rands(r, []rune{})
+	return rands(r, stdRandSource, []rune{})
 }
+
+// RandSource possibilities
+func (r Regexps) RandSource(rand Rand) string {
+	return string(r.RandSourceWithRunes(rand))
+}
+
+// RandSourceWithRunes possibilities
+func (r Regexps) RandSourceWithRunes(rand Rand) []rune {
+	return rands(r, rand, []rune{})
+}
+
+var stdRandSource = rand.New(rand.NewSource(time.Now().UnixNano()))

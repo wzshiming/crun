@@ -3,9 +3,9 @@ package main
 import (
 	"flag"
 	"fmt"
-	"math/rand"
+	"log"
+	"os"
 	"strings"
-	"time"
 
 	"github.com/wzshiming/crun"
 )
@@ -24,13 +24,13 @@ Usage of crun:
 
 Options:
 `
-	fmt.Print(u)
+	fmt.Fprint(os.Stderr, u)
 	flag.PrintDefaults()
 }
 
 var (
 	r = flag.Bool("r", false, "Random")
-	l = flag.Int("l", 100, "Limit; If equal to -1 then unlimited")
+	l = flag.Int("l", 10000, "Limit; If equal to -1 then unlimited")
 )
 
 func init() {
@@ -38,7 +38,6 @@ func init() {
 }
 
 func main() {
-
 	format := strings.Join(flag.Args(), " ")
 	if format == "" {
 		flag.Usage()
@@ -47,12 +46,11 @@ func main() {
 
 	cs, err := crun.Compile(format)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return
 	}
 
 	if *r {
-		rand.Seed(time.Now().UnixNano())
 		for i := 0; i != *l; i++ {
 			fmt.Println(cs.Rand())
 		}
